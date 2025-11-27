@@ -1,52 +1,7 @@
-import json
-from pathlib import Path
-from typing import Dict, List, Any
-import string
+from typing import Dict, Any
 
-from nltk.stem import PorterStemmer
-
-stemmer = PorterStemmer()
-
-
-def load_movies(path: str = "data/movies.json"):
-    file_path = Path(path)
-
-    if not file_path.exists():
-        raise FileNotFoundError("Movie file not found:", file_path)
-
-    with file_path.open() as f:
-        data = json.load(f)
-
-        return data.get("movies", [])
-
-
-def load_stop_words(path="data/stopwords.txt") -> List[str]:
-    file_path = Path(path)
-
-    if not file_path.exists():
-        raise FileNotFoundError("Movie file not found:", file_path)
-
-    with file_path.open() as f:
-        return f.read().splitlines()
-
-
-def stemmed_token(token):
-    return stemmer.stem(token)
-
-
-def preprocess_text(s):
-    PUNCT_TABLE = str.maketrans("", "", string.punctuation)
-
-    return s.lower().translate(PUNCT_TABLE)
-
-
-def tokenize_text(text):
-    stop_words = load_stop_words()
-
-    tokens = preprocess_text(text).split()
-    tokens = [stemmed_token(token) for token in tokens if token not in stop_words]
-
-    return tokens
+from utils.tokenize import tokenize_text
+from inverted_index import load_movies, InvertedIndex
 
 
 def movie_matches(movie: Dict[str, Any], key: str) -> bool:
@@ -61,14 +16,25 @@ def movie_matches(movie: Dict[str, Any], key: str) -> bool:
     )
 
 
-def search(keyword: str, limit: int = 5):
-    if not keyword:
+def search_command(key: str, limit: int = 5):
+    if not key:
         return []
 
-    movies = load_movies()
+    idx = InvertedIndex()
 
-    matched = [m for m in movies if movie_matches(m, keyword)]
+    # load
+    idx.load()
 
-    matched.sort(key=lambda m: m.get("id", 0))
+    key_tokens = tokenize_text(key)
 
-    return [m["title"] for m in matched[:limit]]
+    # get
+    seen, results = set(), []
+    for token in key_tokens:
+        doc_ids = idx.get_documents(token)
+        
+        if doc_ids not in
+        matched_movies.extend(docs)
+
+    matched_movies.sort(key=lambda m: m.get("id", 0))
+
+    return [m["title"] for m in matched_movies[:limit]]
