@@ -66,22 +66,26 @@ class InvertedIndex:
 
     def get_tf(self, doc_id: int, term: str) -> int:
         tokens = tokenize_text(term)
-        
+
         if len(tokens) != 1:
             raise ValueError("term must be a single token")
         token = tokens[0]
 
         return self.term_frequencies[doc_id][token]
-    
+
     def get_idf(self, term: str):
         tokens = tokenize_text(term)
-        
+
         if len(tokens) != 1:
             raise ValueError("term must be a single token")
         token = tokens[0]
-        
+
         doc_count = len(self.docmap)
         term_doc_count = len(self.index[token])
-        
+
         return math.log((doc_count + 1) / (term_doc_count + 1))
-    
+
+    def get_tfidf(self, doc_id: int, term: str) -> float:
+        tf = self.get_tf(doc_id, term)
+        idf = self.get_idf(term)
+        return tf * idf
