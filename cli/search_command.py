@@ -16,7 +16,7 @@ def movie_matches(movie: Dict[str, Any], key: str) -> bool:
     )
 
 
-def search_command(key: str, limit: int = 5):
+def show_matched_movies(key: str, limit: int = 5):
     if not key:
         return []
 
@@ -27,14 +27,26 @@ def search_command(key: str, limit: int = 5):
 
     key_tokens = tokenize_text(key)
 
-    # get
-    seen, results = set(), []
+    # search
+    seen_doc_ids, matched_movies = set(), []
     for token in key_tokens:
         doc_ids = idx.get_documents(token)
-        
-        if doc_ids not in
-        matched_movies.extend(docs)
+
+        for doc_id in doc_ids:
+            if doc_id not in seen_doc_ids:
+                seen_doc_ids.add(doc_id)
+                matched_movies.append(idx.docmap[doc_id])
+
+                if len(matched_movies) >= limit:
+                    break
 
     matched_movies.sort(key=lambda m: m.get("id", 0))
 
-    return [m["title"] for m in matched_movies[:limit]]
+    return [movie["title"] for movie in matched_movies]
+
+
+def search_command(word):
+    matched_movies_title = show_matched_movies(word)
+
+    for idx, title in enumerate(matched_movies_title):
+        print(idx + 1, title, sep=". ")

@@ -1,25 +1,6 @@
-#!/usr/bin/env python3
-
 import argparse
-from helper import search_command
-
-from inverted_index import InvertedIndex
-
-
-def show_matched_movies(word):
-    matched_movies_title = search_command(word)
-
-    for idx, title in enumerate(matched_movies_title):
-        print(idx + 1, title, sep=". ")
-
-
-def build_index():
-    idx = InvertedIndex()
-    idx.build()
-    idx.save()
-
-    # docs = idx.get_documents("merida")
-    # print(f"First document for token 'merida' = {docs[0]}")
+from search_command import search_command
+from build_command import build_command
 
 
 def main() -> None:
@@ -40,9 +21,9 @@ def main() -> None:
             print("Searching for:", args.query)
 
             word = args.query
-            show_matched_movies(word)
+            search_command(word)
         case "build":
-            build_index()
+            build_command()
 
         case _:
             parser.print_help()
