@@ -1,7 +1,8 @@
 import argparse
-from search_command import search_command
-from build_command import build_command
-from tf_command import tf_command
+from command.search_command import search_command
+from command.build_command import build_command
+from command.tf_command import tf_command
+from command.idf_command import idf_command
 
 
 def main() -> None:
@@ -16,6 +17,9 @@ def main() -> None:
     tf_parser = subparsers.add_parser("tf", help="Find frequency of a term in a doc")
     tf_parser.add_argument("doc_id", type=int, help="Document ID")
     tf_parser.add_argument("term", type=str, help="Term to get frequency for")
+    
+    idf_parser = subparsers.add_parser("idf", help="Find idf of a term in dataser")
+    idf_parser.add_argument("term", type=str, help="Term to get idf for")
 
     args = parser.parse_args()
 
@@ -31,6 +35,9 @@ def main() -> None:
         case "tf":
             tf = tf_command(args.doc_id, args.term)
             print(f"Term frequency of '{args.term}' in document '{args.doc_id}': {tf}")
+        case "idf":
+            idf = idf_command(args.term)
+            print(f"Inverse document frequency of '{args.term}': {idf:.2f}")
 
         case _:
             parser.print_help()

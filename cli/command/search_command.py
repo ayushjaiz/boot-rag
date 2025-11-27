@@ -44,4 +44,3 @@ def search_command(key: str, limit: int = 5):
 
     for idx, movie in enumerate(matched_movies):
         print(idx + 1, movie["title"], sep=". ")
-        

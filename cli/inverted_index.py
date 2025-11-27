@@ -1,3 +1,5 @@
+import math
+
 from typing import Dict, Set, Counter
 from collections import defaultdict, Counter
 from utils.file_utils import File
@@ -70,3 +72,16 @@ class InvertedIndex:
         token = tokens[0]
 
         return self.term_frequencies[doc_id][token]
+    
+    def get_idf(self, term: str):
+        tokens = tokenize_text(term)
+        
+        if len(tokens) != 1:
+            raise ValueError("term must be a single token")
+        token = tokens[0]
+        
+        doc_count = len(self.docmap)
+        term_doc_count = len(self.index[token])
+        
+        return math.log((doc_count + 1) / (term_doc_count + 1))
+    
