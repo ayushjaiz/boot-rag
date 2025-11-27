@@ -1,4 +1,3 @@
-import json
 import requests
 
 from utils.file_utils import File
@@ -11,11 +10,12 @@ def load_data():
     )
     data = response.json()
 
-    File.dump_json(data)
+    File.dump_json("data/movies.json", data)
 
 
 def build_command():
-    load_data()
+    # load data only when do data file present
+    # load_data()
 
     idx = InvertedIndex()
     idx.build()

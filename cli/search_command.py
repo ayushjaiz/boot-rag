@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from utils.tokenize import tokenize_text
-from inverted_index import load_movies, InvertedIndex
+from inverted_index import InvertedIndex
 
 
 def movie_matches(movie: Dict[str, Any], key: str) -> bool:
@@ -16,7 +16,7 @@ def movie_matches(movie: Dict[str, Any], key: str) -> bool:
     )
 
 
-def show_matched_movies(key: str, limit: int = 5):
+def search_command(key: str, limit: int = 5):
     if not key:
         return []
 
@@ -42,11 +42,6 @@ def show_matched_movies(key: str, limit: int = 5):
 
     matched_movies.sort(key=lambda m: m.get("id", 0))
 
-    return [movie["title"] for movie in matched_movies]
-
-
-def search_command(word):
-    matched_movies_title = show_matched_movies(word)
-
-    for idx, title in enumerate(matched_movies_title):
-        print(idx + 1, title, sep=". ")
+    for idx, movie in enumerate(matched_movies):
+        print(idx + 1, movie["title"], sep=". ")
+        

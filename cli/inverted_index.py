@@ -1,6 +1,7 @@
-from typing import Dict, Set, List
-from collections import defaultdict
+from typing import Dict, Set, Counter
+from collections import defaultdict, Counter
 from utils.file_utils import File
+from utils.tokenize import tokenize_text
 
 
 def load_movies(movies_data_path="data/movies.json"):
@@ -8,23 +9,31 @@ def load_movies(movies_data_path="data/movies.json"):
     return movies
 
 
-def tokenize(text: str) -> List[str]:
-    return [token.lower() for token in text.split()]
-
-
 class InvertedIndex:
     def __init__(self):
-        ## index maps tokens to sets of document IDs
-        self.index: Dict[str, Set] = defaultdict(set)
+        # index maps tokens to sets of document IDs
+        self.index: Dict[str, Set[int]] = defaultdict(set)
+
         # docmap stores document metadata by document ID
-        self.docmap: Dict[str, Dict] = defaultdict(dict)
+        self.docmap: Dict[int, Dict] = defaultdict(dict)
 
+        self.term_frequencies: Dict[str, Counter] = defaultdict(Counter)
+
+        # initialise cache file fath
+        self.index_pickle_path = "cache/index.pkl"
+        self.docmap_pickle_path = "cache/docmap.pkl"
+        self.tf_pickle_path = "cache/tf.pkl"
+
+    # updates index dict with text given
     def __add_document(self, doc_id, text):
-        tokens = tokenize(text)
+        tokens = tokenize_text(text)
 
-        for token in tokens:
+        for token in set(tokens):
             self.index[token].add(doc_id)
 
+        self.term_frequencies[doc_id].update(tokens)
+
+    # updates docmap
     def __add_data(self, doc_id, data):
         self.docmap[doc_id] = data
 
@@ -37,21 +46,27 @@ class InvertedIndex:
             self.__add_document(doc_id, text)
             self.__add_data(doc_id, data=movie)
 
+    # save index, docmap and tf to disk
     def save(self):
-        index_pickle_path = "cache/index.pkl"
-        docmap_pickle_path = "cache/docmap.pkl"
+        File.dump_pickle(self.index_pickle_path, self.index)
+        File.dump_pickle(self.docmap_pickle_path, self.docmap)
+        File.dump_pickle(self.tf_pickle_path, self.term_frequencies)
 
-        File.dump_pickle(index_pickle_path, self.index)
-        File.dump_pickle(docmap_pickle_path, self.docmap)
-
-    # extra
+    # load index, docmap and tf from disk
     def load(self):
-        index_pickle_path = "cache/index.pkl"
-        docmap_pickle_path = "cache/docmap.pkl"
-
-        self.index = File.load_pickle(index_pickle_path)
-        self.docmap = File.load_pickle(docmap_pickle_path)
+        self.index = File.load_pickle(self.index_pickle_path)
+        self.docmap = File.load_pickle(self.docmap_pickle_path)
+        self.term_frequencies = File.load_pickle(self.tf_pickle_path)
 
     def get_documents(self, key):
         doc_ids = self.index.get(key, set())
         return sorted(list(doc_ids))
+
+    def get_tf(self, doc_id: int, term: str) -> int:
+        tokens = tokenize_text(term)
+        
+        if len(tokens) != 1:
+            raise ValueError("term must be a single token")
+        token = tokens[0]
+
+        return self.term_frequencies[doc_id][token]
