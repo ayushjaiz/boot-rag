@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from utils.tokenize import tokenize_text
-from inverted_index import InvertedIndex
+from lib.inverted_index import InvertedIndex
 
 
 def movie_matches(movie: Dict[str, Any], key: str) -> bool:
