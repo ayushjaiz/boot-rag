@@ -1,4 +1,4 @@
-from inverted_index import InvertedIndex
+from lib.inverted_index import InvertedIndex
 
 def idf_command(term):
     idx = InvertedIndex()
