@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import pickle
+import numpy as np
 
 
 class File:
@@ -37,6 +38,12 @@ class File:
 
         with file_path.open("rb") as f:
             return pickle.load(f)
+        
+    @staticmethod
+    def load_npy(path: str):
+        File._get_path(path)
+        
+        return np.load(path)
 
     @staticmethod
     def _prepare_path(path: str) -> Path:
@@ -56,3 +63,9 @@ class File:
         file_path = File._prepare_path(path)
         with file_path.open("wb") as f:
             pickle.dump(data, f)
+            
+    @staticmethod
+    def dump_npy(path: str, data):
+        File._prepare_path(path)
+        np.save(path, data)
+        
