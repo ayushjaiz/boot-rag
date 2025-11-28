@@ -21,6 +21,21 @@ uv run cli/keyword_search_cli.py idf bear
 
 
 
+# verify model
+```
+uv run cli/semantic_search_cli.py verify
+```
+
+
+# generate embedding
+```
+uv run cli/semantic_search_cli.py embed_text "hi this is ayush"
+```
+
+
+
+
+
 
 
 
