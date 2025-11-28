@@ -1,7 +1,7 @@
 import requests
 
 from utils.file_utils import File
-from inverted_index import InvertedIndex
+from lib.inverted_index import InvertedIndex
 
 
 def load_data():
